@@ -1,0 +1,311 @@
+<document xmlns="http://cnx.rice.edu/cnxml" xmlns:md="http://cnx.rice.edu/mdml">
+  <title>Mysql C API</title>
+  <metadata><md:content-id>undefined</md:content-id><md:title/><md:uuid>100e8047-bdc0-4a3a-8110-05ddb374b17e</md:uuid>
+</metadata>
+  <content>
+    <section id="id-274500846818">
+      <title>MySQL C API</title>
+      <section id="id-430828882977">
+        <title>MySQL</title>
+        <para id="id9396011">Przed uruchomianiem aplikacji natęży mieć bazę danych z tabela 'result' z polami: Id, Time, SP, PV, CV. Jeżeli sie takowej nie posiada należy ją stworzyć.</para>
+        <para id="id10474068">Oto kilka przydatnych do tego instrukcji:</para>
+        <para id="id9827274">połączenie z baza:</para>
+        <para id="id9827279">
+          <code># mysql -u $user -p</code>
+        </para>
+        <para id="id9946687">tworzenie bazy danych:</para>
+        <para id="id9396281">
+          <code>&gt;CREATE DATABASE control;</code>
+        </para>
+        <para id="id9371595">pracuj z tabela (wykonuj na niej dalsze operacje):</para>
+        <para id="id9371600">
+          <code>&gt;USE control</code>
+        </para>
+        <para id="id10730852">tworzenie tabeli:</para>
+        <para id="id10730857">
+          <code>&gt;CREATE TABLE result(Id int not null auto_increment primary key,Time TimeStamp(14) not null,SP double not null,PV double not null,CV double not null );</code>
+        </para>
+        <para id="id8276170">dodawanie danych (Id i Time uzupełniane są automatycznie): </para>
+        <para id="id8276177">
+          <code>&gt;INSERT INTO result (SP,PV,CV) VALUES(1,2,3)</code>
+        </para>
+        <para id="id10543309">czyszczenie tabeli:</para>
+        <para id="id10543313">
+          <code>&gt;DELETE FROM result;</code>
+        </para>
+        <para id="id9185183">czyszczenie tabeli (Id zacznie numerować od nowa):</para>
+        <para id="id9185187">
+          <code>&gt;TRUNCATE result;</code>
+        </para>
+        <para id="id9118905">usuwanie tabeli z bazy:</para>
+        <para id="id10029416">
+          <code>&gt;DROP result;</code>
+        </para>
+        <para id="id10535993">zamiana nazwy kolumny:</para>
+        <para id="id10535998">
+          <code>&gt;ALTER TABLE `result` CHANGE `number` `Id` DECIMAL( 9, 0 ) DEFAULT '0' NOT NULL;</code>
+        </para>
+        <para id="id10056474">zmiana hasła:</para>
+        <para id="id9946636">
+          <code>&gt;SET PASSWORD FOR $user=PASSWORD('password');</code>
+        </para>
+      </section>
+      <section id="id-217568730057">
+        <title>C API</title>
+        <para id="id9108606">Przed połączeniem z baza danych należy inicjalizować strukturę – identyfikator:</para>
+        <para id="id9170646">
+          <code>mysql = mysql_init((MYSQL*) 0);</code>
+        </para>
+        <para id="id9627316">Połączenie z baza danych:</para>
+        <para id="id9627322">mysql_real_connect( mysql, host, login, passwd, table, port,NULL,0);</para>
+        <para id="id9763320">Wykonanie zapytania:</para>
+        <para id="id9763324">mysql_real_query(mysql,query,(unsigned int) strlen(query));</para>
+        <para id="id9320100">Zamykanie połączenia:</para>
+        <para id="id9320105">mysql_close(mysql);</para>
+        <para id="id9994476">Jeżeli chcemy pobrać rezultaty zapytania np. po pytaniu “SHOW” lub “SELECT” należy użyć dodatkowych funkcji.</para>
+        <para id="id9423640">Używaj rezultatów ostatniego zapytania:</para>
+        <para id="id9423648">
+          <code>res=mysql_use_result(mysql);</code>
+        </para>
+        <para id="id10091467">Wyodrębnij nazwy kolumn:</para>
+        <para id="id10091474">
+          <code>fields = mysql_fetch_fields(res);</code>
+        </para>
+        <para id="id8578505">Pobierz wiersz spełniający ostatnie zapytanie (konwersja rezultatów w krotki):</para>
+        <para id="id10029442">
+          <code>row = mysql_fetch_row(res);</code>
+        </para>
+        <para id="id9474049">Wyodrębnij liczbe kolumn:</para>
+        <para id="id9474055">
+          <code>num_fields = mysql_num_fields(res);</code>
+        </para>
+        <para id="id10536490">
+          <code>Wyodrębnij szerokości kolumn:</code>
+        </para>
+        <para id="id8517858">
+          <code>lengths = mysql_fetch_lengths(res);</code>
+        </para>
+      </section>
+      <section id="id-137297076434">
+        <title>Specyfikacja zmiennych i funkcji MySQL C API</title>
+        <para id="id7907465">MYSQL-struktura komunikacyjna:</para>
+        <para id="id8129492">
+          <code>typedef struct st_mysql {</code>
+        </para>
+        <para id="id10121720">
+          <code>NET net; /* Communication parameters */</code>
+        </para>
+        <para id="id10220788">
+          <code>gptr connector_fd; /* ConnectorFd for SSL */</code>
+        </para>
+        <para id="id9421752">
+          <code>char *host,*user,*passwd,*unix_socket,</code>
+        </para>
+        <para id="id10026293">
+          <code>*server_version,*host_info,*info,*db;</code>
+        </para>
+        <para id="id9421867">
+          <code>unsigned int port,client_flag,server_capabilities;</code>
+        </para>
+        <para id="id8517850">
+          <code>unsigned int protocol_version;</code>
+        </para>
+        <para id="id9873217">
+          <code>unsigned int field_count;</code>
+        </para>
+        <para id="id9826889">
+          <code>unsigned int server_status;</code>
+        </para>
+        <para id="id9845362">
+          <code>unsigned long thread_id; /* Id for connection in server */</code>
+        </para>
+        <para id="id9118844">
+          <code>my_ulonglong affected_rows;</code>
+        </para>
+        <para id="id10547688">
+          <code>my_ulonglong insert_id; /* id if insert on table with NEXTNR */</code>
+        </para>
+        <para id="id9588928">
+          <code>my_ulonglong extra_info; /* Used by mysqlshow */</code>
+        </para>
+        <para id="id9827106">
+          <code>unsigned long packet_length;</code>
+        </para>
+        <para id="id8905142">
+          <code>enum mysql_status status;</code>
+        </para>
+        <para id="id8129639">
+          <code>MYSQL_FIELD *fields;</code>
+        </para>
+        <para id="id9558486">
+          <code>MEM_ROOT field_alloc;</code>
+        </para>
+        <para id="id10451698">
+          <code>my_bool free_me; /* If free in mysql_close */</code>
+        </para>
+        <para id="id10457456">
+          <code>my_bool reconnect; /* set to 1 if automatic reconnect */</code>
+        </para>
+        <para id="id8841876">
+          <code>struct st_mysql_options options;</code>
+        </para>
+        <para id="id8589921">
+          <code>char scramble_buff[9];</code>
+        </para>
+        <para id="id9091644">
+          <code>struct charset_info_st *charset;</code>
+        </para>
+        <para id="id9091654">
+          <code>unsigned int server_language;</code>
+        </para>
+        <para id="id10455229">
+          <code>} MYSQL;</code>
+        </para>
+        <para id="id10455236">MYSQL_RES -struktura reprezentująca rezultaty zapytania</para>
+        <para id="id9372311">
+          <code>typedef struct st_mysql_res {</code>
+        </para>
+        <para id="id9372319">
+          <code>my_ulonglong row_count;</code>
+        </para>
+        <para id="id8524899">
+          <code>unsigned int field_count, current_field;</code>
+        </para>
+        <para id="id8524910">
+          <code>MYSQL_FIELD *fields;</code>
+        </para>
+        <para id="id8812266">
+          <code>MYSQL_DATA *data;</code>
+        </para>
+        <para id="id5628684">
+          <code>MYSQL_ROWS *data_cursor;</code>
+        </para>
+        <para id="id9861812">
+          <code>MEM_ROOT field_alloc;</code>
+        </para>
+        <para id="id9861826">
+          <code>MYSQL_ROW row; /* If unbuffered read */</code>
+        </para>
+        <para id="id8736369">
+          <code>MYSQL_ROW current_row; /* buffer to current row */</code>
+        </para>
+        <para id="id9233703">
+          <code>unsigned long *lengths; /* column lengths of current row */</code>
+        </para>
+        <para id="id9233718">
+          <code>MYSQL *handle; /* for unbuffered reads */</code>
+        </para>
+        <para id="id8517886">
+          <code>my_bool eof; /* Used my mysql_fetch_row */</code>
+        </para>
+        <para id="id10730887">
+          <code>} MYSQL_RES;</code>
+        </para>
+        <para id="id10730894">MYSQL_ROW-struktura reprezentująca danych w krotce. </para>
+        <para id="id10730904">
+          <code>typedef struct st_mysql_field {</code>
+        </para>
+        <para id="id10730914">
+          <code>char *name; /* Name of column */</code>
+        </para>
+        <para id="id10730929">
+          <code>char *table; /* Table of column if column was a field */</code>
+        </para>
+        <para id="id10190876">
+          <code>char *def; /* Default value (set by mysql_list_fields) */</code>
+        </para>
+        <para id="id10190893">
+          <code>enum enum_field_types type; /* Type of field. Se mysql_com.h for types */</code>
+        </para>
+        <para id="id10024726">
+          <code>unsigned int length; /* Width of column */</code>
+        </para>
+        <para id="id10024742">
+          <code>unsigned int max_length; /* Max width of selected set */</code>
+        </para>
+        <para id="id10024757">
+          <code>unsigned int flags; /* Div flags */</code>
+        </para>
+        <para id="id8981365">
+          <code>unsigned int decimals; /* Number of decimals in field */</code>
+        </para>
+        <para id="id8981379">
+          <code>} MYSQL_FIELD;</code>
+        </para>
+        <para id="id8981385">Plik nagłówkowy mysql znajduje sie w /usr/include/mysql :</para>
+        <para id="id8981392">
+          <code>#include &lt;mysql/mysql.h&gt;</code>
+        </para>
+        <para id="id8981401">Funkcje:</para>
+        <para id="id8981405">
+          <code>MYSQL *STDCALL mysql_init(MYSQL *mysql);</code>
+        </para>
+        <para id="id9802146">
+          <code>MYSQL *STDCALL mysql_real_connect(MYSQL *mysql, const char *host,</code>
+        </para>
+        <para id="id9802154">
+          <code> const char *user,</code>
+        </para>
+        <para id="id9802168">
+          <code> const char *passwd,</code>
+        </para>
+        <para id="id9802181">
+          <code> const char *db,</code>
+        </para>
+        <para id="id9396212">
+          <code> unsigned int port,</code>
+        </para>
+        <para id="id9396225">
+          <code> const char *unix_socket,</code>
+        </para>
+        <para id="id9396237">
+          <code> unsigned int clientflag);</code>
+        </para>
+        <para id="id9974131">
+          <code>void STDCALL mysql_close(MYSQL *sock);</code>
+        </para>
+        <para id="id9974140">
+          <code>int STDCALL mysql_real_query(MYSQL *mysql, const char *q,unsigned long length);</code>
+        </para>
+        <para id="id9974148">
+          <code>MYSQL_RES * STDCALL mysql_use_result(MYSQL *mysql);</code>
+        </para>
+        <para id="id9974158">
+          <code>MYSQL_ROW STDCALL mysql_fetch_row(MYSQL_RES *result);</code>
+        </para>
+        <para id="id9974165">
+          <code>unsigned long * STDCALL mysql_fetch_lengths(MYSQL_RES *result);</code>
+        </para>
+        <para id="id9974173">
+          <code>MYSQL_FIELD *STDCALL mysql_fetch_field(MYSQL_RES *result);</code>
+        </para>
+        <para id="id9395963">
+          <code>unsigned int STDCALL mysql_num_fields(MYSQL_RES *res);</code>
+        </para>
+        <para id="id9395971">Literatura</para>
+        <para id="id9395976">http://mysql.com/</para>
+        <para id="id9395983">http://www.linuxfocus.org/Polish/September2003/article304.shtml#304lfindex2</para>
+        <para id="id9395991">Uwagi</para>
+        <para id="id9395996">kompilacja:</para>
+        <para id="id10571509"># gcc -lm -lmysqlclient zbiornik_mysql.c regul.c mylib.c -o zbior</para>
+        <para id="id10571515">katalog zbr2</para>
+        <para id="id10571519">zawiera zrodal programu ktory wykonuje: </para>
+        <list list-type="bulleted" id="id10571526">
+          <item>polczenie z baza</item>
+          <item>symulacje zbiornik-regulator</item>
+          <item>zapis przebiegu Temperatury do bazy</item>
+          <item>odczytanie i wypisanie na ekran zpisanych danych z bazy</item>
+        </list>
+        <para id="id10571551">katalog zbr3</para>
+        <para id="id9372351">zawiera zrodal programu ktory wykonuje:- polczenie z baza</para>
+        <list list-type="bulleted" id="id9372360">
+          <item>symulacje zbiornik-regulator</item>
+          <item>zapis przebiegu Temperatury do bazy</item>
+          <item>odczytanie i wypisanie na ekran zpisanych danych z baz</item>
+          <item>mozliwosc samodzielnego wykonania zapyt. do bazy- skł MySQL</item>
+        </list>
+        <para id="id9372390"> Uwaga odczyt rezultatow nie jest doskonaly, np wysypuje sie przy  pytaniu SLECT... zadanym gdy tabela jest pusta</para>
+      </section>
+    </section>
+  </content>
+</document>
