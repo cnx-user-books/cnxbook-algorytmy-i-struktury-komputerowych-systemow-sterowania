@@ -1,3 +1,14 @@
-<col:collection xmlns="http://cnx.rice.edu/collxml" xmlns:col="http://cnx.rice.edu/collxml" xml:lang="en" type="Course">  <metadata xmlns:md="http://cnx.rice.edu/mdml" mdml-version="0.5">  <md:content-id>col10420</md:content-id>  <md:title>Algorytmy i Struktury Komputerowych Systemów Sterowania</md:title>      <md:license url="http://creativecommons.org/licenses/by/2.0/">Creative Commons Attribution License 2.0</md:license>  <md:language>pl</md:language>        <md:uuid>ccab7ae2-3ac7-48d2-a048-7572b4f18310</md:uuid>
-<md:slug>algorytmy-i-struktury-komputerowych-systemow-sterowania</md:slug>
-</metadata>  <col:content>          <col:module document="m14536"/>                    </col:content></col:collection>
+<?xml version="1.0"?>
+<col:collection xmlns="http://cnx.rice.edu/collxml" xmlns:col="http://cnx.rice.edu/collxml" xml:lang="en" type="Course" authors="Marcin W. Nowak">
+  <metadata xmlns:md="http://cnx.rice.edu/mdml" mdml-version="0.5">
+    <md:content-id>col10420</md:content-id>
+    <md:title>Algorytmy i Struktury Komputerowych System&#xF3;w Sterowania</md:title>
+    <md:license url="http://creativecommons.org/licenses/by/2.0/">Creative Commons Attribution License 2.0</md:license>
+    <md:language>pl</md:language>
+    <md:uuid>ccab7ae2-3ac7-48d2-a048-7572b4f18310</md:uuid>
+    <md:slug>algorytmy-i-struktury-komputerowych-systemow-sterowania</md:slug>
+  </metadata>
+  <col:content>
+    <col:module document="m14536"/>
+  </col:content>
+</col:collection>
